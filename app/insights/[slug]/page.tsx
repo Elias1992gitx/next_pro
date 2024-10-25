@@ -1,45 +1,61 @@
-import React, { useEffect } from "react";
-import { PortableText } from "@portabletext/react";
-import { client } from "@/sanity/lib/client";
-import { getDetailPost, getPosts, Post } from "@/sanity/queries/posts";
-import { default as imageUrlBuilder } from "@sanity/image-url";
-import { format } from "date-fns";
-import Image from "next/image";
-import Link from "next/link";
-import ShareButtons from "./share-blog";
-import { ChevronLeft, Clock, User } from "lucide-react";
-import { GetStaticPropsContext } from 'next';
+'use client'
 
-const builder = imageUrlBuilder(client);
+import { client } from '@/sanity/lib/client'
+import { getDetailPost, getPosts, Post } from '@/sanity/queries/posts'
+import { PortableText } from '@portabletext/react'
+import { default as imageUrlBuilder } from '@sanity/image-url'
+import { format } from 'date-fns'
+import { ChevronLeft, Clock, User } from 'lucide-react'
+import { GetStaticPropsContext } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import React, { useEffect } from 'react'
+import ShareButtons from './share-blog'
+
+const builder = imageUrlBuilder(client)
 
 function urlFor(source: any) {
-  return builder.image(source);
+  return builder.image(source)
 }
 
 const componentsTest = {
   block: {
     normal: ({ children }: { children: React.ReactNode }) => (
-      <p className="mb-3 text-sm sm:text-base leading-relaxed text-gray-300">{children}</p>
+      <p className="mb-3 text-sm sm:text-base leading-relaxed text-gray-300">
+        {children}
+      </p>
     ),
     h1: ({ children }: { children: React.ReactNode }) => (
-      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 mt-6 text-white">{children}</h1>
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 mt-6 text-white">
+        {children}
+      </h1>
     ),
     h2: ({ children }: { children: React.ReactNode }) => (
-      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 mt-4 text-white">{children}</h2>
+      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 mt-4 text-white">
+        {children}
+      </h2>
     ),
     h3: ({ children }: { children: React.ReactNode }) => (
-      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 mt-3 text-white">{children}</h3>
+      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 mt-3 text-white">
+        {children}
+      </h3>
     ),
     blockquote: ({ children }: { children: React.ReactNode }) => (
-      <blockquote className="border-l-4 border-blue-500 pl-3 py-2 mb-3 italic text-gray-400 text-sm">{children}</blockquote>
+      <blockquote className="border-l-4 border-blue-500 pl-3 py-2 mb-3 italic text-gray-400 text-sm">
+        {children}
+      </blockquote>
     ),
   },
   list: {
     bullet: ({ children }: { children: React.ReactNode }) => (
-      <ul className="list-disc list-inside mb-3 text-gray-300 text-sm">{children}</ul>
+      <ul className="list-disc list-inside mb-3 text-gray-300 text-sm">
+        {children}
+      </ul>
     ),
     number: ({ children }: { children: React.ReactNode }) => (
-      <ol className="list-decimal list-inside mb-3 text-gray-300 text-sm">{children}</ol>
+      <ol className="list-decimal list-inside mb-3 text-gray-300 text-sm">
+        {children}
+      </ol>
     ),
   },
   listItem: {
@@ -58,39 +74,49 @@ const componentsTest = {
       <em className="italic text-gray-400">{children}</em>
     ),
     code: ({ children }: { children: React.ReactNode }) => (
-      <code className="bg-gray-700 rounded px-1 py-0.5 text-xs text-gray-300">{children}</code>
+      <code className="bg-gray-700 rounded px-1 py-0.5 text-xs text-gray-300">
+        {children}
+      </code>
     ),
-    link: ({ children, value }: { children: React.ReactNode; value: { href: string } }) => (
-      <a href={value.href} className="text-blue-400 hover:underline">{children}</a>
+    link: ({
+      children,
+      value,
+    }: {
+      children: React.ReactNode
+      value: { href: string }
+    }) => (
+      <a href={value.href} className="text-blue-400 hover:underline">
+        {children}
+      </a>
     ),
   },
-};
+}
 
 const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
   if (!params || !params.slug || typeof params.slug !== 'string') {
-    return <div>Error: Invalid slug</div>;
+    return <div>Error: Invalid slug</div>
   }
 
-  const slug = params.slug;
-  const data = await getDetailPost(slug);
-  let postsData: Post[] = await getPosts();
-  postsData = postsData.filter((post) => post.slug?.current !== slug);
+  const slug = params.slug
+  const data = await getDetailPost(slug)
+  let postsData: Post[] = await getPosts()
+  postsData = postsData.filter((post) => post.slug?.current !== slug)
 
-  const shareUrl = `https://nexus-labs.tech/insights/${slug}`;
-  const shareTitle = data.title;
+  const shareUrl = `https://nexus-labs.tech/insights/${slug}`
+  const shareTitle = data.title
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Client-side only code
     }
-  }, []);
+  }, [])
 
   return (
     <div className="min-h-screen font-sans text-gray-100">
       <div className="relative h-[40vh] sm:h-[50vh] md:h-[60vh]">
         <Image
           src={data.imageUrl}
-          alt={data.slug.current || ""}
+          alt={data.slug.current || ''}
           layout="fill"
           objectFit="cover"
           className="brightness-50"
@@ -114,7 +140,7 @@ const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
             </span>
             <span className="flex items-center">
               <Clock className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-              {format(new Date(data.publishedAt), "MMM dd, yyyy")}
+              {format(new Date(data.publishedAt), 'MMM dd, yyyy')}
             </span>
           </div>
           <div className="flex flex-wrap mt-2">
@@ -158,7 +184,7 @@ const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
                       <div className="relative h-28 sm:h-32">
                         <Image
                           src={post.imageUrl}
-                          alt={post.title || ""}
+                          alt={post.title || ''}
                           layout="fill"
                           objectFit="cover"
                         />
@@ -168,7 +194,7 @@ const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
                           {post.title}
                         </h3>
                         <p className="text-xs text-gray-400 mt-1">
-                          {format(new Date(post.publishedAt), "MMM dd, yyyy")}
+                          {format(new Date(post.publishedAt), 'MMM dd, yyyy')}
                         </p>
                       </div>
                     </div>
@@ -180,7 +206,7 @@ const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BlogDetailPage;
+export default BlogDetailPage

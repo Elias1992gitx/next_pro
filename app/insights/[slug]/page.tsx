@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { PortableText } from "@portabletext/react";
 import { client } from "@/sanity/lib/client";
 import { getDetailPost, getPosts, Post } from "@/sanity/queries/posts";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ShareButtons from "./share-blog";
 import { ChevronLeft, Clock, User } from "lucide-react";
+import { GetStaticPropsContext } from 'next';
 
 const builder = imageUrlBuilder(client);
 
@@ -65,14 +66,24 @@ const componentsTest = {
   },
 };
 
-const BlogDetailPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+const BlogDetailPage = async ({ params }: GetStaticPropsContext) => {
+  if (!params || !params.slug || typeof params.slug !== 'string') {
+    return <div>Error: Invalid slug</div>;
+  }
+
+  const slug = params.slug;
   const data = await getDetailPost(slug);
   let postsData: Post[] = await getPosts();
   postsData = postsData.filter((post) => post.slug?.current !== slug);
 
   const shareUrl = `https://nexus-labs.tech/insights/${slug}`;
   const shareTitle = data.title;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Client-side only code
+    }
+  }, []);
 
   return (
     <div className="min-h-screen font-sans text-gray-100">
